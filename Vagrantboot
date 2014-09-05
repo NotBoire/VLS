@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+sudo apt-get update
+
+# install git
+sudo apt-get -y install git
+
+# install nginx
+sudo apt-get -y install nginx
+
+# install php5
+sudo apt-get -y install php5 php5-fpm php5-curl php5-cli
+
+# configure project
+cd /vagrant
+curl -s http://getcomposer.org/installer | php
+php composer.phar install
+php composer.phar dumpautoload -o
+
+# setup nginx site
+sudo touch /etc/nginx/sites-available/vls
+
+sudo sh -c 'echo "server {
+    server_name vls.dev;
+    listen 8080;
+
+    root /usr/share/nginx/vls/www;
+    location / {
+      try_files \$uri @rewrite;
+    }
+
+    location @rewrite {
+      rewrite ^(.*)$ /index.php/\$1 last;
+    }
+
+    location ~ ^/(index)\.php(/|$) {
+      fastcgi_pass unix:/var/run/php5-fpm.sock;
+      fastcgi_split_path_info ^(.+\.php)(/.*)$;
+      include fastcgi_params;
+      fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+      fastcgi_param HTTPS off;
+    }
+
+    error_log /var/log/nginx/vls_error.log;
+    access_log /var/log/nginx/vls_access.log;
+}" >> /etc/nginx/sites-available/vls'
+
+sudo ln -s /etc/nginx/sites-available/vls /etc/nginx/sites-enabled/vls
+
+sudo service nginx restart
+
+sudo sed -i "s/;listen.owner = www-data/listen.owner = www-data/g" /etc/php5/fpm/pool.d/www.conf
+sudo sed -i "s/;listen.group = www-data/listen.group = www-data/g" /etc/php5/fpm/pool.d/www.conf
+sudo sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" /etc/php5/fpm/pool.d/www.conf
+
+sudo service php5-fpm restart
