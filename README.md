@@ -11,13 +11,17 @@ Very light start : PHP Project
 
 Take the project with git just running the following command :
 
-- git clone git@github.com:NotBoire/elasticms.git
+- git clone git@github.com:NotBoire/vls.git
+
+- cd VLS
+
+- execute : run.sh
 
 Start the Vagrant box
 
 - vagrant up
 
-- add 127.0.0.1 vls.dev in /etc/hosts
+- add 127.0.0.1 {your_site_name} in /etc/hosts
  
 - go to http://vls.dev:8080
 
