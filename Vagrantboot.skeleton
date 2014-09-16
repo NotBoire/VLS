@@ -18,13 +18,13 @@ php composer.phar install
 php composer.phar dumpautoload -o
 
 # setup nginx site
-sudo touch /etc/nginx/sites-available/vls
+sudo touch /etc/nginx/sites-available/{server_name}
 
 sudo sh -c 'echo "server {
-    server_name vls.dev;
+    server_name {server_name};
     listen 8080;
 
-    root /usr/share/nginx/vls/www;
+    root /usr/share/nginx/{server_name}/www;
     location / {
       try_files \$uri @rewrite;
     }
@@ -41,11 +41,11 @@ sudo sh -c 'echo "server {
       fastcgi_param HTTPS off;
     }
 
-    error_log /var/log/nginx/vls_error.log;
-    access_log /var/log/nginx/vls_access.log;
-}" >> /etc/nginx/sites-available/vls'
+    error_log /var/log/nginx/{server_name}_error.log;
+    access_log /var/log/nginx/{server_name}_access.log;
+}" >> /etc/nginx/sites-available/{server_name}'
 
-sudo ln -s /etc/nginx/sites-available/vls /etc/nginx/sites-enabled/vls
+sudo ln -s /etc/nginx/sites-available/{server_name} /etc/nginx/sites-enabled/{server_name}
 
 sudo service nginx restart
 
