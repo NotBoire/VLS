@@ -23,6 +23,6 @@ Start the Vagrant box
 
 - add 127.0.0.1 {your_site_name} in /etc/hosts
  
-- go to http://vls.dev:8080
+- go to http://{your_site_name}:8080
 
 ***
